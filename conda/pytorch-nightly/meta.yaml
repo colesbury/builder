@@ -12,7 +12,7 @@ requirements:
 
   host:
     - python
-    - numpy 1.11.*
+    - numpy 1.14
     - setuptools
     - pyyaml
     - cffi # [py2k]
@@ -26,7 +26,7 @@ requirements:
 
   run:
     - python
-    - numpy >=1.11
+    - numpy >=1.14
     - mkl >=2018
     - cffi # [py2k]
     - ninja
