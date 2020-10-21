@@ -334,7 +334,7 @@ for py_ver in "${DESIRED_PYTHON[@]}"; do
     # Create a new environment to test in
     # TODO these reqs are hardcoded for pytorch-nightly
     test_env="env_$folder_tag"
-    retry conda create -yn "$test_env" python="$py_ver"
+    retry conda create -c "$ANACONDA_USER" -yn "$test_env" python="$py_ver"
     source activate "$test_env"
 
     # Extract the package for testing
