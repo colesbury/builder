@@ -80,9 +80,9 @@ if [[ -n "$DESIRED_PYTHON" && "$DESIRED_PYTHON" != cp* ]]; then
         ;;
     esac
 fi
-py_majmin="${DESIRED_PYTHON:2:1}.${DESIRED_PYTHON:3:1}"
 pydir="/opt/python/$DESIRED_PYTHON"
 export PATH="$pydir/bin:$PATH"
+py_majmin=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
 echo "Will build for Python version: ${DESIRED_PYTHON} with ${python_installation}"
 
 mkdir -p /tmp/$WHEELHOUSE_DIR
@@ -383,7 +383,8 @@ if [[ -z "$BUILD_PYTHONLESS" ]]; then
   # Print info on the libraries installed in this wheel
   # Rather than adjust find command to skip non-library files with an embedded *.so* in their name,
   # since this is only for reporting purposes, we add the || true to the ldd command.
-  installed_libraries=($(find "$pydir/lib/python${py_majmin}/site-packages/torch/" -name '*.so*'))
+  platlib=$(python -c 'import sysconfig; print(sysconfig.get_path("platlib"))')
+  installed_libraries=($(find "$platlib/torch/" -name '*.so*'))
   echo "The wheel installed all of the libraries: ${installed_libraries[@]}"
   for installed_lib in "${installed_libraries[@]}"; do
       ldd "$installed_lib" || true
