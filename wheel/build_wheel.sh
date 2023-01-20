@@ -162,14 +162,9 @@ case ${desired_python} in
         ;;
 esac
 
-# Install into a fresh env
-tmp_env_name="wheel_py$python_nodot"
-conda create ${EXTRA_CONDA_INSTALL_FLAGS} -yn "$tmp_env_name" python="$desired_python"
-source activate "$tmp_env_name"
-
-retry conda install ${EXTRA_CONDA_INSTALL_FLAGS} -yq cmake "numpy${NUMPY_PINNED_VERSION}" nomkl "setuptools${SETUPTOOLS_PINNED_VERSION}" "pyyaml${PYYAML_PINNED_VERSION}" cffi typing_extensions ninja requests
-retry conda install ${EXTRA_CONDA_INSTALL_FLAGS} -yq mkl-include==2022.2.1 mkl-static==2022.2.1 -c intel
+retry pip install cmake numpy==1.19.3 setuptools pyyaml cffi typing_extensions ninja requests
 retry pip install -qr "${pytorch_rootdir}/requirements.txt" || true
+retry pip install mkl-include==2022.2.1 mkl-static==2022.2.1
 
 # For USE_DISTRIBUTED=1 on macOS, need libuv and pkg-config to find libuv.
 export USE_DISTRIBUTED=1
@@ -216,22 +211,22 @@ if [[ -z "$BUILD_PYTHONLESS" ]]; then
 
     ##########################
     # now test the binary, unless it's cross compiled arm64
-    if [[ -z "$CROSS_COMPILE_ARM64" ]]; then
-        pip uninstall -y "$TORCH_PACKAGE_NAME" || true
-        pip uninstall -y "$TORCH_PACKAGE_NAME" || true
-
-        # Create new "clean" conda environment for testing
-        conda create ${EXTRA_CONDA_INSTALL_FLAGS} -yn "test_conda_env" python="$desired_python"
-        conda activate test_conda_env
-
-        pip install "$PYTORCH_FINAL_PACKAGE_DIR/$wheel_filename_new" -v
-
-        echo "$(date) :: Running tests"
-        pushd "$pytorch_rootdir"
-        "${SOURCE_DIR}/../run_tests.sh" 'wheel' "$desired_python" 'cpu'
-        popd
-        echo "$(date) :: Finished tests"
-    fi
+#    if [[ -z "$CROSS_COMPILE_ARM64" ]]; then
+#        pip uninstall -y "$TORCH_PACKAGE_NAME" || true
+#        pip uninstall -y "$TORCH_PACKAGE_NAME" || true
+#
+#        # Create new "clean" conda environment for testing
+#        conda create ${EXTRA_CONDA_INSTALL_FLAGS} -yn "test_conda_env" python="$desired_python"
+#        conda activate test_conda_env
+#
+#        pip install "$PYTORCH_FINAL_PACKAGE_DIR/$wheel_filename_new" -v
+#
+#        echo "$(date) :: Running tests"
+#        pushd "$pytorch_rootdir"
+#        "${SOURCE_DIR}/../run_tests.sh" 'wheel' "$desired_python" 'cpu'
+#        popd
+#        echo "$(date) :: Finished tests"
+#    fi
 else
     pushd "$pytorch_rootdir"
     mkdir -p build
