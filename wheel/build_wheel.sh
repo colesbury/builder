@@ -195,7 +195,7 @@ if [[ $package_type != 'libtorch' ]]; then
     echo "running delocate"
     find $whl_tmp_dir -name "*.whl" | xargs -I {} delocate-wheel -v {}
     find $whl_tmp_dir -name "*.whl"
-    find $whl_tmp_dir -name "*.whl" | xargs -I {} delocate-listdeps {}
+    #find $whl_tmp_dir -name "*.whl" | xargs -I {} delocate-listdeps {}
     echo "Finished delocating wheels at $(date)"
 fi
 
